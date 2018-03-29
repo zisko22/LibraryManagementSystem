@@ -291,10 +291,8 @@ CREATE PROCEDURE InactiveBorrowers
 AS
 	--Select Name for borrowers with no current loans
 	SELECT Borrower.Name AS 'Name: '
-		From Borrower, BookLoans
-		WHERE Borrower.CardNo NOT IN (SELECT CardNo FROM BookLoans)
-		GROUP BY Borrower.Name
-		HAVING COUNT(BookLoans.CardNo) = 0;
+		FROM (Borrower INNER JOIN BookLoans)
+		WHERE BookLoans.CardNo = NULL;
 GO
 --Produce the title, borrower name, and borrower address of everyone with a book due at 'Sharpstown'
 --with today as the due date
