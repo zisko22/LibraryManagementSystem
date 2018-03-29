@@ -1,20 +1,26 @@
-USE LibraryManagementSystem
+--Check if database exists, then drop to start anew if it does
+IF (EXISTS(LibraryManagementSystem))
+	DROP DATABASE LibraryManagementSystem;
+--Create the LibraryManagementSystem Database
+CREATE DATABASE LibraryManagementSystem
 GO
-
+--CREATE ALL THE TABLES
+--Create Publisher Table
 CREATE TABLE Publisher (
 	Name VARCHAR(60) NOT NULL,
 	PublisherAddress VARCHAR(60) NOT NULL,
 	Phone VARCHAR(60) NOT NULL,
+	PublisherAddress VARCHAR(60) NOT NULL,
 	PRIMARY KEY (Name)
 );
-ALTER TABLE Publisher ADD PublisherAddress VARCHAR(100) NOT NULL;
+--Create LibraryBranch Table
 CREATE TABLE LibraryBranch (
 	BranchId INT NOT NULL,
 	BranchName VARCHAR(60) NOT NULL,
 	BranchAddress VARCHAR(60) NOT NULL,
 	PRIMARY KEY (BranchId)
 );
-
+--Create Borrower Table
 CREATE TABLE Borrower (
 	CardNo INT NOT NULL,
 	Name VARCHAR(60) NOT NULL,
@@ -22,7 +28,7 @@ CREATE TABLE Borrower (
 	Phone VARCHAR(30) NOT NULL,
 	PRIMARY KEY (CardNo)
 );
-
+--Create Book Table
 CREATE TABLE Book (
 	BookId INT NOT NULL,
 	Title VARCHAR(60) NOT NULL,
@@ -30,7 +36,7 @@ CREATE TABLE Book (
 	PRIMARY KEY (BookId),
 	FOREIGN KEY (PublisherName) REFERENCES Publisher(Name)
 );
-
+--Create BookCopies Table
 CREATE TABLE BookCopies (
 	BookId INT NOT NULL,
 	BranchId INT NOT NULL,
@@ -38,7 +44,7 @@ CREATE TABLE BookCopies (
 	FOREIGN KEY (BookId) REFERENCES Book(BookId),
 	FOREIGN KEY (BranchId) REFERENCES LibraryBranch(BranchId)
 );
-
+--Create BookLoans Table
 CREATE TABLE BookLoans (
 	BookId INT NOT NULL,
 	BranchId INT NOT NULL,
@@ -48,13 +54,15 @@ CREATE TABLE BookLoans (
 	FOREIGN KEY (BookId) REFERENCES Book(BookId),
 	FOREIGN KEY (BranchId) REFERENCES LibraryBranch(BranchId)
 );
-
+--Create BookAuthors Table
 CREATE TABLE BookAuthors (
 	BookId INT NOT NULL,
 	AuthorName VARCHAR(60) NOT NULL,
 	FOREIGN KEY (BookId) REFERENCES Book(BookId)
 );
-UPDATE Publisher SET Name = 'The Globe Pequot Press' WHERE Name = 'The Globe Pequot Pres';
+
+--POPULATE ALL THE TABLES
+--Populate Publisher Table
 INSERT INTO Publisher
 	(Name, PublisherAddress, Phone)
 	VALUES
@@ -75,8 +83,7 @@ INSERT INTO Publisher
 	('Timber Press', '133 SW Second Ave, Suite 450, Portland, OR, 97204', '503-227-2878'),
 	('Picador', '175 Fifth Ave, New York, NY 10010', '800-221-7945')
 ;
-SELECT * FROM Publisher;
-
+--Populate LibraryBranch Table
 INSERT INTO LibraryBranch
 	(BranchId, BranchName, BranchAddress)
 	VALUES
@@ -85,8 +92,7 @@ INSERT INTO LibraryBranch
 	(3, 'Dullsville', '123 Unicorn Ave, Portland, OR 97204'),
 	(4, 'Industrial', '326 Donkey Dr, Portland, OR 97204')
 ;
-SELECT * FROM LibraryBranch;
-
+--Populate Borrower Table
 INSERT INTO Borrower
 	(CardNo, Name, BorrowerAddress, Phone)
 	VALUES
@@ -95,11 +101,10 @@ INSERT INTO Borrower
 	(100003, 'Joe Schmoe', '1928 Unicorn Ave, Portland, OR, 97204', '382-483-3949'),
 	(100004, 'Larrry Davis', '384 Mule Way, Portland, OR 97204', '493-494-5940'),
 	(100005, 'Zach Galifinakis', '9387 Donkey Dr, Portland, OR, 97204', '948-394-3049'),
-	(100006, 'Jane Doe', '8498 Giraffe Dr, Portland, OR 97204', '945-490-4950')
+	(100006, 'Jane Doe', '8498 Giraffe Dr, Portland, OR 97204', '945-490-4950'),
+	(100007, 'Donald Trump','2839 Tupee Way, Cincinati, OH 41073','316-465-4565')
 ;
-INSERT INTO Borrower (CardNo, Name, BorrowerAddress, Phone) VALUES (100007, 'Donald Trump', '2839 Tupee Way, Cincinati, OH 41073','316-465-4565');
-SELECT * FROM Borrower;
-
+--Populate Book Table
 INSERT INTO Book
 	(BookId, Title, PublisherName)
 	VALUES
@@ -124,10 +129,10 @@ INSERT INTO Book
 	(19, 'The Home Apothecary', 'Quarry Books'),
 	(20, 'The Herbal Apothecary', 'Timber Press'),
 	(21, 'A Brief History of Time', 'Random House'),
-	(22, 'The Lost Time', 'Picador')
+	(22, 'The Lost Time', 'Picador'),
+	(23, 'The Shining', 'Random House')
 ;
-SELECT * FROM Book;
-
+--Populate BookCopies Table
 INSERT INTO BookCopies
 	(BookId, BranchId, No_of_Copies)
 	VALUES
@@ -174,15 +179,11 @@ INSERT INTO BookCopies
 	(19,3,4),
 	(20,4,4),
 	(21,3,4),
-	(22,4,5)
+	(22,4,5),
+	(22,1,6),
+	(23,2,4)
 ;
-INSERT INTO BookCopies
-	(BookId, BranchId, No_of_Copies)
-	VALUES
-	(22,1,6)
-;
-SELECT * FROM BookCopies;
-
+--Populate BookLoans Table
 INSERT INTO BookLoans
 	(BookId, BranchId, CardNo, DateOut, DueDate)
 	VALUES
@@ -241,11 +242,10 @@ INSERT INTO BookLoans
 	(9,1,100003,'2018-03-10','2018-04-10'),
 	(10,2,100004,'2018-03-11','2018-04-11')
 ;
-SELECT * FROM BookLoans;
-
+--Populate BookAuthors Table
 INSERT INTO BookAuthors
 	(BookId, AuthorName)
-	VALUES 
+	VALUES
 	(1, 'Brian Greene'),
 	(2, 'David L Anderson'),
 	(3, 'Carl Sagan'),
@@ -267,25 +267,26 @@ INSERT INTO BookAuthors
 	(19, 'Stacey Dugliss-Wesselman'),
 	(20, 'JJ Pursell'),
 	(21, 'Stephen Hawking'),
-	(22, 'Mark Lee')
+	(22, 'Mark Lee'),
+	(23, 'Stephen King')
 ;
-SELECT * FROM LibraryBranch;
-SELECT * FROM BookCopies;
-ALTER PROCEDURE LostTribeSharpstown
+
+--CREATE ALL THE PROCEDURES
+--Produce the number of copies of 'The Lost Tribe' at the 'Sharpstown' branch
+CREATE PROCEDURE LostTribeSharpstown
 AS
 	SELECT No_of_Copies FROM BookCopies
 	WHERE BookCopies.BranchId = 1
 	AND BookCopies.BookId = 22;
 GO
-EXEC LostTribeSharpstown
-
+--Produce the number of copies of 'The Lost Tribe' at all the branches
 CREATE PROCEDURE LostTribe
 AS
 	SELECT BookCopies.No_of_Copies, LibraryBranch.BranchName
 		FROM BookCopies, LibraryBranch
 		WHERE BookCopies.BookId = 22;
 GO
-LostTribe
+--Produce the names of all borrowers who do not have a current loan
 CREATE PROCEDURE InactiveBorrowers
 AS
 	--Select Name for borrowers with no current loans
@@ -295,17 +296,16 @@ AS
 		GROUP BY Borrower.Name
 		HAVING COUNT(BookLoans.CardNo) = 0;
 GO
-SELECT * FROM Borrower
-DROP PROC InactiveBorrowers
-CREATE PROCEDURE SharpstownDueToday 
-AS 
+--Produce the title, borrower name, and borrower address of everyone with a book due at 'Sharpstown'
+--with today as the due date
+CREATE PROCEDURE SharpstownDueToday
+AS
 	SELECT Book.Title, Borrower.Name, Borrower.BorrowerAddress
 		FROM Book, Borrower, BookLoans
 		WHERE BookLoans.DueDate = '2018-03-27'
 		AND BookLoans.BranchId = 1;
 GO
-SharpstownDueToday
-SELECT * FROM LibraryBranch
+--Produce the number of all the loans at each branch
 CREATE PROCEDURE AllLoans
 AS
 	--Select loans from each branch
@@ -326,9 +326,9 @@ AS
 		FROM BookLoans
 		WHERE BookLoans.BranchId = 4;
 GO
-AllLoans
+--Produce the name, addresss, and number of books for borrowers with more than five current loans
 CREATE PROCEDURE MoreThanFive
-AS 
+AS
 	--Select names, addresses, and number of books for borrowers with more than five
 	SELECT Borrower.Name AS 'Name: ', Borrower.BorrowerAddress AS 'Address: ', COUNT(BookLoans.CardNo) AS 'Total Loans: '
 		FROM Borrower, BookLoans
@@ -336,10 +336,8 @@ AS
 		GROUP BY Borrower.Name, Borrower.BorrowerAddress
 		HAVING COUNT(BookLoans.CardNo) > 5;
 GO
-MoreThanFive
-INSERT INTO Book (BookId, Title, PublisherName) VALUES (23, 'The Shining', 'Random House');
-INSERT INTO BookAuthors (BookId, AuthorName) VALUES (23, 'Stephen King');
-INSERT INTO BookCopies (BookId, BranchId, No_of_Copies) VALUES (23, 2, 4);
+--Produce the title and number of copies of all books written by 'Stephen King'
+--and located at the central branch
 CREATE PROCEDURE StephenKingCentral
 AS
 	--Select title and number of copies, where branch is central and Author is Stephen King
@@ -349,5 +347,3 @@ AS
 		AND BookCopies.BranchId = 2
 		AND Book.BookId = BookAuthors.BookId;
 GO
-SELECT * FROM BookAuthors
-DROP PROC StephenKingCentral
